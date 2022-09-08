@@ -1,0 +1,93 @@
+// C++ code
+//CAPA DE APLICACION
+//Author Elias Higuera
+//Importamos librerias
+#include <LiquidCrystal.h> 
+#include <Servo.h>
+//#include <Ubidots.h>
+
+//Declaramos variables
+Servo PuertaEmergencia; //servomotor
+int Led1 = 12; //Led Naranja
+int Led2 = 11; //Led Rojo
+int piezo = 13; //Piezo
+int Tmp  = 0; //variable para el sensor
+float Temperatura = 0; //variable para representar la TMP
+LiquidCrystal lcd(9, 8, 7, 6, 5, 4); //LCD
+//const char* UBIDOTS_TOKEN = "BBFF-mdhttFfdeDTfGLYa0k7uu6XhXg39hj";  
+//const char* WIFI_SSID = "mi red wifi";      
+//const char* WIFI_PASS = "myPassword"; 
+
+//Ubidots ubidots(UBIDOTS_TOKEN, UBI_HTTP);
+
+//int var_tmp;
+
+//declaramos los pines por donde conectamos los dispositivos
+void setup()
+{
+  pinMode(Led1, OUTPUT); //Led1
+  pinMode(Led2, OUTPUT); //Led2
+  pinMode(piezo, OUTPUT); //Piezo
+  lcd.begin(9, 8); //prendemos pantalla
+  lcd.print("Temperatura:"); //y imprima temperatura
+  PuertaEmergencia.attach(3);//le decimos que el servomotor esta en pin3
+  
+  //Serial.begin(115200);
+  //ubidots.wifiConnect(WIFI_SSID, WIFI_PASS);
+  
+  // // ubidots.setDebug(true);  
+  
+  //var_Tmp=0;
+  
+  //colocar setup del piezo
+  //y de los demas componentes output
+  
+}
+ 
+//ponemos lo que en nuestro arduino se repeitar una y otra vez osea nuestro programa
+void loop()
+{
+  //le decimos que lea temperatura
+  Temperatura = map(analogRead(Tmp),0,1023,-50,450);
+  //le decimos que la imprima en la pantalla
+  lcd.setCursor(0,1);
+  lcd.print(Temperatura);
+  //le decimos que ponga el simbolo
+  lcd.setCursor(5,1);
+  lcd.print(" oC");
+  
+  //var_tmp = Temperatura;
+  //Serial.println(var_tmp);
+
+  //ubidots.add("var_tmp", var_tmp);
+  
+  //bool bufferSent = false;
+  //bufferSent = ubidots.send(); 
+  
+  // if (bufferSent) {
+  //Serial.println("Values sent by the device");
+  //}
+  
+  //Le decimos que continuamente este preguntandose el siguiente enunciado condicional
+  if (Temperatura>=50 && Temperatura <=59 ){
+    //espacio para la alarma 1
+    digitalWrite(Led1, HIGH);
+    digitalWrite(Led1, LOW);
+    delay(80);
+    tone(13, 200, 100);
+    delay(1000);
+    
+  }else if (Temperatura>=60){
+    //espacio para la alarma 2
+    digitalWrite(Led2, HIGH);
+    digitalWrite(Led2, LOW);
+    delay(80);  
+    digitalWrite(Led1, LOW);
+    tone(13, 200, 100);
+    delay(80);
+    PuertaEmergencia.write(180);
+    
+    } 
+  //en este caso podemos omitir el else
+  delay(80);
+ }
