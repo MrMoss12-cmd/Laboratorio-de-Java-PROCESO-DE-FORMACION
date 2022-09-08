@@ -1,0 +1,271 @@
+1. Deben construirse mínimo 10 procedimientos almacenados.
+• Mostrar los usuarios registrados en el sistema cuyo genero sea femenino.
+
+CREATE PROCEDURE MostrarUsuarios()
+SELECT *
+FROM TblIdentificacion
+WHERE Identificacion_Genero = 'Femenino';
+
+• Visualizar la facturacion de productos.
+
+CREATE PROCEDURE facturacion()
+SELECT *
+FROM TblFacturasAlmacenadas;
+
+• Mostrar  cuentas facturadas en '2022-08-27:10:30:05' .
+
+CREATE PROCEDURE CuentasFactu()
+SELECT *
+FROM TblCuentasFacturadas
+WHERE CuentasFacturadas_Date = '2022-08-27:10:30:05';
+
+• Mostrar productos devueltos de la factura '57516875'.
+
+CREATE PROCEDURE productosdevueltos()
+SELECT *
+FROM TblDevoluciones
+WHERE Devoluciones_NumeroFactura = '57516875';
+
+• Mostrar cuentas facturadas.
+
+CREATE PROCEDURE CuentasFac()
+SELECT *
+FROM TblCuentasFacturadas;
+
+• Mostrar cedula de los clientes.
+
+CREATE PROCEDURE CedulaClientes()
+SELECT Clientes_NumeroCedula
+FROM TblClientes;
+
+• Consultar precio de producto.
+
+
+CREATE PROCEDURE ConsulPrecio()
+SELECT ArticulosInventario_Precio
+FROM TblArticulosInventario;
+
+• Mostrar dinero facturado y las facturas.
+
+CREATE PROCEDURE DineyFact()
+SELECT Facturas_Almacenadas_NumeroFactura, Facturas_Almacenadas_Total
+FROM TblFacturasAlmacenadas;
+
+• consultar motivos de la devolucion de productos.
+
+CREATE PROCEDURE MotivDevo()
+SELECT Devoluciones_Motivo 
+FROM TblDevoluciones;
+
+• Mostrar los ID de los usuarios que ingreason al sistema y sus horas;
+
+CREATE PROCEDURE UsuariosyFecha()
+SELECT ComprobacionIdentidad_InicioSesion_Date, ComprobacionIdentidad_InicioSesion_Id_Usuario
+FROM TblComprobacionIdentidad_IniciosSesion;
+
+2. Deben construirse mínimo 5 funciones.
+• Minimo valor facturado y factura.
+
+delimiter //
+CREATE FUNCTION minProduct()
+RETURNS INT DETERMINISTIC 
+BEGIN
+DECLARE valor int;
+SET valor = 0;
+SELECT Facturas_Almacenadas_Total INTO valor FROM tblfacturasalmacenadas
+WHERE Facturas_Almacenadas_Total = (SELECT MIN(Facturas_Almacenadas_Total)FROM tblfacturasalmacenadas);
+RETURN valor;
+END//
+
+SELECT * FROM  minProduct;
+
+• consultar el minimo precio de productos inventariados
+
+delimiter //
+CREATE FUNCTION productosInventariados()
+RETURNS INT DETERMINISTIC 
+BEGIN
+DECLARE valor int;
+SET valor = 0;
+SELECT ArticulosInventario_Precio INTO valor FROM TblArticulosInventario
+WHERE ArticulosInventario_Precio = (SELECT MIN(ArticulosInventario_Precio)FROM TblArticulosInventario);
+RETURN valor;
+END//
+
+• mostrar persona registrada mas joven.
+
+delimiter //
+CREATE FUNCTION fechadeNacimiento()
+RETURNS DATE DETERMINISTIC 
+BEGIN
+DECLARE valor DATE;
+SELECT Identificacion_FechaNacimiento INTO valor FROM TblIdentificacion
+WHERE Identificacion_FechaNacimiento = (SELECT MIN(Identificacion_FechaNacimiento)FROM TblIdentificacion);
+RETURN valor;
+END//
+
+• Mostrar el menor total facturados por los empleados.
+
+delimiter //
+CREATE FUNCTION menorrecibidoEmpleados()
+RETURNS INT DETERMINISTIC 
+BEGIN
+DECLARE valor INT;
+SET valor = 0; 
+SELECT Facturas_Almacenadas_Total INTO valor FROM TblFacturasAlmacenadas
+WHERE Facturas_Almacenadas_Total = (SELECT MIN(Facturas_Almacenadas_Total)FROM TblFacturasAlmacenadas);
+RETURN valor;
+END//
+
+• Mostrar el articulo leido mas recientemente.
+
+delimiter //
+CREATE FUNCTION articuloMasreciente()
+RETURNS DATETIME DETERMINISTIC 
+BEGIN
+DECLARE valor DATETIME;
+SET valor = 0;
+SELECT Lectura_Productos_HoraLectura INTO valor FROM TblLecturadeProductos
+WHERE Lectura_Productos_HoraLectura = (SELECT MIN(Lectura_Productos_HoraLectura)FROM TblLecturadeProductos);
+RETURN valor;
+END//
+
+3. Deben construirse mínimo 5 desencadenadores.
+• Tabla identificacion.
+
+CREATE TABLE trigger_identificacion(
+Identificacion_anterior_NumerodeCedula VARCHAR(200) PRIMARY KEY NOT NULL, 
+Identificacion_anterior_NombreCompleto TEXT NOT NULL,
+Identificacion_anterior_FechaNacimiento DATE NOT NULL,
+Identificacion_anterior_LugardeNacimiento TEXT NOT NULL,
+Identificacion_anterior_Genero TEXT NOT NULL,
+Identificacion_nuevo_NumerodeCedula VARCHAR(200) NOT NULL, 
+Identificacion_nuevo_NombreCompleto TEXT NOT NULL,
+Identificacion_nuevo_FechaNacimiento DATE NOT NULL,
+Identificacion_nuevo_LugardeNacimiento TEXT NOT NULL,
+Identificacion_nuevo_Genero TEXT NOT NULL
+);
+
+CREATE TRIGGER identificasionsupdate 
+BEFORE UPDATE ON TblIdentificacion
+FOR EACH ROW
+INSERT INTO trigger_identificacion 
+(Identificacion_anterior_NumerodeCedula, Identificacion_anterior_NombreCompleto,
+Identificacion_anterior_FechaNacimiento, Identificacion_anterior_LugardeNacimiento,
+Identificacion_anterior_Genero, Identificacion_nuevo_NumerodeCedula, Identificacion_nuevo_NombreCompleto,
+Identificacion_nuevo_FechaNacimiento, Identificacion_nuevo_LugardeNacimiento, Identificacion_nuevo_Genero)
+VALUES (OLD.Identificacion_NumerodeCedula, OLD.Identificacion_NombreCompleto, OLD.Identificacion_FechaNacimiento, 
+OLD.Identificacion_LugardeNacimiento, OLD.Identificacion_Genero, NEW.Identificacion_NumerodeCedula, NEW.Identificacion_NombreCompleto, 
+NEW.Identificacion_FechaNacimiento, NEW.Identificacion_LugardeNacimiento, NEW.Identificacion_Genero);
+
+UPDATE TblIdentificacion SET Identificacion_NumerodeCedula = 515453155563 WHERE Identificacion_FechaNacimiento = '1990-08-18';
+SELECT * FROM TblIdentificacion;
+
+• Tabla impresionScreen
+CREATE TABLE trigger_impresionscreen(
+ImpresionScreen_anterior_Imprimir_Productos VARCHAR(400) NOT NULL, 
+ImpresionScreen_anterior_Imprimir_Factura VARCHAR(200) NOT NULL,
+ImpresionScreen_anterior_Imprimir_Producto VARCHAR(200) NOT NULL,
+ImpresionScreen_nuevo_Imprimir_Productos VARCHAR(400) NOT NULL, 
+ImpresionScreen_nuevo_Imprimir_Factura VARCHAR(200) PRIMARY KEY  NOT NULL,
+ImpresionScreen_nuevo_Imprimir_Producto VARCHAR(200) NOT NULL
+);
+
+CREATE TRIGGER ImpresionScreenUpdate 
+BEFORE UPDATE ON TblImpresionScreen
+FOR EACH ROW
+INSERT INTO trigger_impresionscreen
+(ImpresionScreen_anterior_Imprimir_Productos,
+ImpresionScreen_anterior_Imprimir_Factura,
+ImpresionScreen_anterior_Imprimir_Producto,
+ImpresionScreen_nuevo_Imprimir_Productos,
+ImpresionScreen_nuevo_Imprimir_Factura,
+ImpresionScreen_nuevo_Imprimir_Producto)
+VALUES (OLD.ImpresionScreen_Imprimir_Productos, OLD.ImpresionScreen_Imprimir_Factura, OLD.ImpresionScreen_Imprimir_Producto, 
+NEW.ImpresionScreen_Imprimir_Productos, NEW.ImpresionScreen_Imprimir_Factura, 
+NEW.ImpresionScreen_Imprimir_Producto);
+
+UPDATE TblImpresionScreen SET ImpresionScreen_Imprimir_Factura = '/facturas/2022/08/28/12' WHERE ImpresionScreen_Imprimir_Productos = 'Jabon desodorante herbal packx3Und, Atun Vancamp Aceitex 200g, Yogurt Muuu x100g';
+SELECT * FROM TblImpresionScreen ;
+
+• Tabla facturas almacenadas.
+
+CREATE TABLE trigger_facturasalmacenadas(
+Facturas_anterior_Almacenadas_NombreCliente TEXT NOT NULL, 
+Facturas_anterior_Almacenadas_Productos VARCHAR(300) NOT NULL,
+Facturas_anterior_Almacenadas_Total VARCHAR(20) NOT NULL,
+Facturas_anterior_Almacenadas_Cajero TEXT NOT NULL,
+Facturas_anterior_Almacenadas_Cambio VARCHAR(20) NOT NULL,
+Facturas_anterior_Almacenadas_Recibido VARCHAR(35) NOT NULL,
+Facturas_anterior_Almacenadas_NumeroFactura VARCHAR(200) NOT NULL,
+Facturas_nuevo_Almacenadas_NombreCliente TEXT NOT NULL, 
+Facturas_nuevo_Almacenadas_Productos VARCHAR(300) NOT NULL,
+Facturas_nuevo_Almacenadas_Total VARCHAR(20) NOT NULL,
+Facturas_nuevo_Almacenadas_Cajero TEXT NOT NULL,
+Facturas_nuevo_Almacenadas_Cambio VARCHAR(20) NOT NULL,
+Facturas_nuevo_Almacenadas_Recibido VARCHAR(35) NOT NULL,
+Facturas_nuevo_Almacenadas_NumeroFactura VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+CREATE TRIGGER facturasalmacenadasupdate 
+BEFORE UPDATE ON TblFacturasAlmacenadas
+FOR EACH ROW
+INSERT INTO trigger_facturasalmacenadas
+(Facturas_anterior_Almacenadas_NombreCliente, Facturas_anterior_Almacenadas_Productos, Facturas_anterior_Almacenadas_Total,
+Facturas_anterior_Almacenadas_Cajero, Facturas_anterior_Almacenadas_Cambio, Facturas_anterior_Almacenadas_Recibido,
+Facturas_anterior_Almacenadas_NumeroFactura, Facturas_nuevo_Almacenadas_NombreCliente, Facturas_nuevo_Almacenadas_Productos,
+Facturas_nuevo_Almacenadas_Total, Facturas_nuevo_Almacenadas_Cajero, Facturas_nuevo_Almacenadas_Cambio,
+Facturas_nuevo_Almacenadas_Recibido, Facturas_nuevo_Almacenadas_NumeroFactura)
+VALUES (OLD.Facturas_Almacenadas_NombreCliente, OLD.Facturas_Almacenadas_Productos, OLD.Facturas_Almacenadas_Total, OLD.Facturas_Almacenadas_Cajero, 
+OLD.Facturas_Almacenadas_Cambio, OLD.Facturas_Almacenadas_Recibido, OLD.Facturas_Almacenadas_NumeroFactura, NEW.Facturas_Almacenadas_NombreCliente, 
+NEW.Facturas_Almacenadas_Productos, NEW.Facturas_Almacenadas_Total, NEW.Facturas_Almacenadas_Cajero, 
+NEW.Facturas_Almacenadas_Cambio, NEW.Facturas_Almacenadas_Recibido, NEW.Facturas_Almacenadas_NumeroFactura);
+
+UPDATE TblFacturasAlmacenadas SET Facturas_Almacenadas_NombreCliente = 'Hugo antonio' WHERE  Facturas_Almacenadas_NumeroFactura = '15451151';
+SELECT * FROM TblFacturasAlmacenadas;
+
+• Tabla devoluciones.
+
+CREATE TABLE trigger_devoluciones(
+Devoluciones_anterior_Motivo TEXT NOT NULL, 
+Devoluciones_anterior_NumeroFactura VARCHAR(200) NOT NULL,
+Devoluciones_nuevo_Motivo TEXT NOT NULL, 
+Devoluciones_nuevo_NumeroFactura VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+CREATE TRIGGER devolucionesupdate 
+BEFORE UPDATE ON  TblDevoluciones
+FOR EACH ROW
+INSERT INTO trigger_devoluciones 
+(Devoluciones_anterior_Motivo, Devoluciones_anterior_NumeroFactura, Devoluciones_nuevo_Motivo,
+Devoluciones_nuevo_NumeroFactura)
+VALUES (OLD.Devoluciones_Motivo, OLD.Devoluciones_NumeroFactura, NEW.Devoluciones_Motivo , NEW.Devoluciones_NumeroFactura);
+
+UPDATE TblDevoluciones SET Devoluciones_Motivo = 'Total supera recibido del cliente' WHERE Devoluciones_NumeroFactura = '57516875';
+SELECT * FROM TblDevoluciones;
+
+• Tabla TblComprobacionIdentidad_IniciosSesion.
+
+CREATE TABLE trigger_ComprobacionIdentidadIniciosSesion(
+ComprobacionIdentidad_anterior_InicioSesion_Id_Usuario VARCHAR(11) NOT NULL, 
+ComprobacionIdentidad_anterios_InicioSesion_URI VARCHAR(50) NOT NULL,
+ComprobacionIdentidad_anterior_InicioSesion_Date VARCHAR(200) PRIMARY KEY NOT NULL,
+ComprobacionIdentidad_nuevo_InicioSesion_Id_Usuario VARCHAR(11) NOT NULL, 
+ComprobacionIdentidad_nuevo_InicioSesion_URI VARCHAR(50) NOT NULL,
+ComprobacionIdentidad_nuevo_InicioSesion_Date VARCHAR(200) NOT NULL
+);
+
+CREATE TRIGGER ComprobacionIdentidadIniciosSesionupdate 
+BEFORE UPDATE ON TblComprobacionIdentidad_IniciosSesion
+FOR EACH ROW
+INSERT INTO trigger_ComprobacionIdentidadIniciosSesion
+(ComprobacionIdentidad_anterior_InicioSesion_Id_Usuario, ComprobacionIdentidad_anterios_InicioSesion_URI,
+ComprobacionIdentidad_anterior_InicioSesion_Date, ComprobacionIdentidad_nuevo_InicioSesion_Id_Usuario,
+ComprobacionIdentidad_nuevo_InicioSesion_URI, ComprobacionIdentidad_nuevo_InicioSesion_Date)
+VALUES (OLD.ComprobacionIdentidad_InicioSesion_Id_Usuario, OLD.ComprobacionIdentidad_InicioSesion_URI, 
+OLD.ComprobacionIdentidad_InicioSesion_Date, NEW.ComprobacionIdentidad_InicioSesion_Id_Usuario, NEW.ComprobacionIdentidad_InicioSesion_URI, 
+NEW.ComprobacionIdentidad_InicioSesion_Date);
+
+UPDATE TblComprobacionIdentidad_IniciosSesion SET ComprobacionIdentidad_InicioSesion_URI = '/dashboard124/cajero/orlando71' WHERE   ComprobacionIdentidad_InicioSesion_Date = '2022-08-27:10:12:00';
+SELECT * FROM TblComprobacionIdentidad_IniciosSesion;
+
