@@ -1,0 +1,44 @@
+//Declaramos Variables Globales
+Cadena[15] NameProv, Area,  Linea, CorreoOf, WebPag, Encargado, CorreoEn,CellEn
+  
+
+Inicio
+//Declaramos las Entradas
+Escriba "Porfavor Ingrese Nombre del Provedor: "
+Lea NameProv
+Escriba "Porfavor Ingrese Area del Provedor: "
+Lea Area
+Escriba "Porfavor Escriba la linea del Provedor: "
+Lea Linea
+Escriba "Porfavoe Escriba el Correo Electronico del provedor: "
+Lea CorreoOf
+Escriba "Porfavor Escriba la Pagina Web: "
+Lea WebPag
+Escriba "Porfavor Escriba el nombre del Encargado del provedor: "
+Lea Encargado
+Escriba "Porfavor Escriba el correo electronico del provedor: "
+Lea CorreoEn
+Escriba "Porfavor Escriba el numero de celular del encargado del provedor: "
+Lea CellEn
+
+//Imprimimos las Entradas
+Escriba "PROVEDOR REGISTRADO CON EXITO"
+Llamar nueva_linea
+Escriba "Nombre del provedor: " ,NameProv
+Llamar nueva_linea
+Escriba "Area del provedor: " ,Area
+Llamar nueva_linea
+Escriba "Linea del provedor: ",Linea
+Llamar nueva_linea
+Escriba "Correo electronico del provedor: " ,CorreoOf
+Llamar nueva_linea
+Escriba "Pagina web del provedor: ",WebPag
+Llamar nueva_linea
+Escriba "Nombre del encargado del provedor : ", Encargado
+Llamar nueva_linea
+Escriba "Correo electronico del provedor: ", CorreoEn
+Llamar nueva_linea
+Escriba "Numero de Celular del encargado: ", CellEn
+
+
+Fin

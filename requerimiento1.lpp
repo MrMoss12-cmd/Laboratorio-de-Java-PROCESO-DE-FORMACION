@@ -1,0 +1,40 @@
+//Declaramos Variables
+Cadena[15] NombredeUsuario, CargoORol, Departamento, CorreoElectronico
+Entero FechaNacimiento, identificacion
+
+Inicio
+//Declaramos Las Entradas
+Escriba "Porfavor Ingrese Nombre del empleado: "
+Lea NombredeUsuario
+
+Escriba "Porfavor Ingrese Cargo o rol del Empleado: "
+Lea CargoORol
+
+Escriba "Porfavor Ingrese departemento en el que labora el empleado: "
+Lea Departamento
+
+Escriba "Porfavor Ingrese el correo electronico del empleado: "
+Lea CorreoElectronico
+
+Escriba "Porfavor Ingrese el numero de identificacion del empleado: "
+Lea identificacion
+
+Escriba "Porfavor ingrese la fecha de nacimiento del empleado: "
+Lea FechaNacimiento
+
+//Imprimimos las Entradas
+Escriba "USUARIO REGISTRADO CONN EXITO"
+Llamar nueva_linea
+Escriba "Nombre del Usuario: ",NombredeUsuario
+Llamar nueva_linea
+Escriba "Cargo o rol que ocupa: ",CargoORol
+Llamar nueva_linea
+Escriba "Departamento donde labora: ",Departamento
+Llamar nueva_linea
+Escriba "Correo Electronico del empleado: ",CorreoElectronico
+Llamar nueva_linea
+Escriba "Numero de indentificacion del empleado: ",identificacion
+Llamar nueva_linea
+Escriba "Fecha de nacimiento del empleado: " ,FechaNacimiento
+
+Fin
