@@ -1,0 +1,558 @@
+SHOW DATABASES;
+USE ... ;
+SHOW TABLES;
+CREATE TABLES;
+DESC ...;
+
+ALTER TABLE Tiposautomotores 
+ADD aut_nombre varchar(255);
+
+ALTER TABLE Compañia 
+MODIFY COLUMN com_ano_fun year;
+
+ALTER TABLE Tiposautomotores
+ADD CONSTRAINT AUTO_INCREMENT(aut_tipo);
+
+DROP TABLE Tiposautomotores;
+
+UPDATE Estudiantexcurso
+SET fec_ini_estcur = 2011-02-01
+WHERE cod_cur_estcur = 289011 AND doc_est_estcur = 91245678;
+
+PUNTO 1
+
+CREATE DATABASE MarketExpress;
+SHOW DATABASES;
+USE MarketExpress;
+
+
+PUNTO 2 - Creacion de tablas 
+
+PARTE 1 - Modulo de registro 
+
+DESC TblIdentificacion;
+DESC TblPersonas;
+DESC TblDatosValidos;
+DESC TblProbarEmpleado;
+DESC TblRegistrarUsuario;
+DESC TblBraceIniciarSesion;
+DESC TblSocket;
+DESC TblEncriptadora;
+DESC TblComprobaciondelaIdentidad;
+DESC TblComprobacionIdentidad_IniciosSesion;
+DESC TblIniciodeSesion;
+
+CREATE TABLE TblIdentificacion(
+Identificacion_NumerodeCedula VARCHAR(200) PRIMARY KEY NOT NULL, 
+Identificacion_NombreCompleto TEXT NOT NULL,
+Identificacion_FechaNacimiento DATE NOT NULL,
+Identificacion_LugardeNacimiento TEXT NOT NULL,
+Identificacion_Genero TEXT NOT NULL
+);
+
+ALTER TABLE TblIdentificacion
+ADD CONSTRAINT FOREIGN KEY (Identificacion_NumerodeCedula) REFERENCES TblPersonas(id_Cargo);
+
+CREATE TABLE TblPersonas(
+id_Cargo VARCHAR(200) PRIMARY KEY NOT NULL,
+Personas_NumerodeCelular VARCHAR(50) NOT NULL, 
+Personas_NumeroFijo VARCHAR(50) NOT NULL,
+Personas_CorreoElectronico VARCHAR(40) NOT NULL,
+personas_DirecciondeResidencia TEXT NOT NULL,
+Personas_TipodeSangre VARCHAR(2) NOT NULL
+);
+
+ALTER TABLE TblPersonas
+ADD CONSTRAINT FOREIGN KEY (id_Cargo) REFERENCES TblDatosvalidos(DatosValidos_NumerodeCedula);
+
+
+CREATE TABLE TblDatosValidos(
+DatosValidos_InfoCampos VARCHAR(200)  NOT NULL, 
+DatosValidos_TestCampos VARCHAR(35) NOT NULL,
+DatosValidos_NumerodeCedula VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblDatosValidos
+ADD CONSTRAINT FOREIGN KEY (DatosValidos_NumerodeCedula) REFERENCES TblProbarEmpleado(ProbarEmpleado_Info_Campos);
+
+CREATE TABLE TblProbarEmpleado(
+ProbarEmpleado_ProbarToken VARCHAR(35) NOT NULL, 
+ProbarEmpleado_Date DATETIME NOT NULL,
+ProbarEmpleado_EstadodePrueba VARCHAR(200) NOT NULL,
+ProbarEmpleado_Info_Campos VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblProbarEmpleado
+ADD CONSTRAINT FOREIGN KEY (ProbarEmpleado_Info_Campos) REFERENCES TblRegistrarUsuario(RegistrarUsuario_Log_Register);
+
+CREATE TABLE TblRegistrarUsuario(
+RegistrarUsuario_ProbarToken VARCHAR(35) NOT NULL, 
+RegistrarUsuario_Date DATETIME NOT NULL,
+RegistrarUsuario_Info_Register TEXT NOT NULL,
+RegistrarUsuario_Log_Register VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblRegistrarUsuario
+ADD CONSTRAINT FOREIGN KEY (RegistrarUsuario_Log_Register) REFERENCES TblBraceIniciarSesion(Brace_IniciarSesion_Clave_Automatica_Generator);
+
+CREATE TABLE TblBraceIniciarSesion(
+Brace_IniciarSesion_Date DATETIME NOT NULL, 
+Brace_IniciarSesion_Usuario VARCHAR(30) NOT NULL,
+Brace_IniciarSesion_Contraseña VARCHAR(30) NOT NULL,
+Brace_IniciarSesion_Clave_Automatica_Generator VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblBraceIniciarSesion
+ADD CONSTRAINT FOREIGN KEY (Brace_IniciarSesion_Clave_Automatica_Generator) REFERENCES TblSocket(Socket_Clave_Automatica_Reconfigurada);
+
+CREATE TABLE TblSocket(
+Socket_Date DATETIME NOT NULL, 
+Socket_IP VARCHAR(50) NOT NULL,
+Socket_MAC VARCHAR(50) NOT NULL,
+Socket_Clave_Automatica_Reconfigurada VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblSocket
+ADD CONSTRAINT FOREIGN KEY (Socket_Clave_Automatica_Reconfigurada) REFERENCES TblEncriptadora(Encriptadora_Clave_Automatica_Final);
+
+CREATE TABLE TblEncriptadora(
+Encriptadora_Clave_Automatica_Final VARCHAR(200) PRIMARY KEY NOT NULL, 
+Encriptadora_Digest_Info_Usuario VARCHAR(300) NOT NULL,
+Encriptadora_Digest_Id_Usuario VARCHAR(50) NOT NULL,
+Encriptatora_Digest_Contraseña_Usuario VARCHAR(50) NOT NULL
+);
+
+ALTER TABLE TblEncriptadora
+ADD CONSTRAINT FOREIGN KEY (Encriptadora_Clave_Automatica_Final) REFERENCES TblComprobaciondelaIdentidad(ComprobacionIdentidad_Desencriptacion_Id_usuario);
+
+CREATE TABLE TblComprobaciondelaIdentidad(
+ComprobacionIdentidad_Desencriptacion_Info_usuario VARCHAR(300) NOT NULL, 
+ComprobacionIdentidad_Desencriptacion_Id_usuario VARCHAR(200) PRIMARY KEY NOT NULL,
+ComprobacionIdentidad_Desencriptacion_Contraseña_Usuario VARCHAR(50) NOT NULL
+);
+
+ALTER TABLE TblComprobaciondelaIdentidad
+ADD CONSTRAINT FOREIGN KEY (ComprobacionIdentidad_Desencriptacion_Id_usuario) REFERENCES TblComprobacionIdentidad_IniciosSesion(ComprobacionIdentidad_InicioSesion_Date);
+
+CREATE TABLE TblComprobacionIdentidad_IniciosSesion(
+ComprobacionIdentidad_InicioSesion_Id_Usuario VARCHAR(11) NOT NULL, 
+ComprobacionIdentidad_InicioSesion_URI VARCHAR(50) NOT NULL,
+ComprobacionIdentidad_InicioSesion_Date VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblComprobacionIdentidad_IniciosSesion
+ADD CONSTRAINT FOREIGN KEY (ComprobacionIdentidad_InicioSesion_Date) REFERENCES TblOperacionesdeVenta(OperacionesdeVenta_Date_Final);
+
+ALTER TABLE TblComprobacionIdentidad_IniciosSesion 
+ADD CONSTRAINT FOREIGN KEY (ComprobacionIdentidad_InicioSesion_Date) REFERENCES TblOperacionesdeAdministraccion(Operacionesdeadministracion_Date);
+
+CREATE TABLE TblIniciodeSesion(
+InicioSession_TokenSesion VARCHAR(50) NOT NULL, 
+InicioSession_Date DATETIME NOT NULL,
+InicioSession_Register_Socket VARCHAR(50) NOT NULL,
+InicioSession_Counter VARCHAR(50) NOT NULL,
+InicioSession_Generar_URI VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblIniciodeSesion
+ADD CONSTRAINT FOREIGN KEY (Iniciosession_Generar_URI) REFERENCES TblComprobacionIdentidad_IniciosSesion(ComprobacionIdentidad_InicioSesion_Date);
+
+PARTE 2 - MODULO DE OPERACIONES
+
+DESC TblOperacionesdeVenta;
+DESC TblCajero_TblClientes;
+DESC TblClientes;
+DESC TblCajero;
+DESC TblCuentasIniciadas;
+DESC TblLecturadeProductos;
+DESC TblImpresionScreen;
+DESC TblCuentasFacturadas;
+DESC TblFacturasAlmacenadas;
+DESC TblDevoluciones;
+DESC TblImpresionFactura;
+DESC TblArticulosComprados;
+DESC TblArticulosInventario;
+DESC TblArticulosSuministrados;
+DESC TblProveedores;
+DESC TblOperario;
+DESC TblAdministrador;
+DESC TblOperacionesdeAdministraccion;
+
+
+CREATE TABLE TblOperacionesdeVenta(
+OperacionesdeVenta_Date_Inicio DATETIME NOT NULL,
+OperacionesdeVenta_Date_Final VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblOperacionesdeVenta
+ADD CONSTRAINT FOREIGN KEY (OperacionesdeVenta_Date_Final) REFERENCES TblCajero_TblClientes(Cajero_Clientes_Date_Inicio);
+
+CREATE TABLE TblCajero_TblClientes(
+Cajero_Clientes_Date_Inicio VARCHAR(200) PRIMARY KEY NOT NULL,
+Cajero_Clientes_Date_Final DATETIME NOT NULL
+);
+
+ALTER TABLE TblCajero_TblClientes 
+ADD CONSTRAINT FOREIGN KEY (Cajero_Clientes_Date_Inicio) REFERENCES TblCuentasIniciadas(Cuentas_Iniciadas_TokenCuenta);
+
+CREATE TABLE TblCajero(
+Cajero_Caja VARCHAR(32) NOT NULL, 
+Cajero_Nombre VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblCajero
+ADD CONSTRAINT FOREIGN KEY (Cajero_Nombre) REFERENCES TblCajero_TblClientes(Cajero_Clientes_Date_Inicio);
+
+
+CREATE TABLE TblClientes(
+Clientes_Nombre TEXT NOT NULL, 
+Clientes_NumeroCedula VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblClientes
+ADD CONSTRAINT FOREIGN KEY (Clientes_NumeroCedula) REFERENCES TblCajero_Tblclientes(Cajero_Clientes_Date_Inicio);
+
+CREATE TABLE TblCuentasIniciadas(
+Cuentas_Iniciadas_ID VARCHAR(20) NOT NULL, 
+Cuentas_Iniciadas_TokenCuenta VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblCuentasIniciadas
+ADD CONSTRAINT FOREIGN KEY (Cuentas_Iniciadas_TokenCuenta) REFERENCES TblLecturadeProductos(Lectura_Productos_CodigoBarra);
+
+CREATE TABLE TblLecturadeProductos(
+Lectura_Productos_CodigoBarra VARCHAR(200) PRIMARY KEY NOT NULL, 
+Lectura_Productos_NombreProducto VARCHAR(50) NOT NULL,
+Lectura_Productos_HoraLectura DATETIME NOT NULL
+);
+
+ALTER TABLE TblLecturadeProductos 
+ADD CONSTRAINT FOREIGN KEY (Lectura_Productos_CodigoBarra) REFERENCES TblImpresionScreen(ImpresionScreen_Imprimir_Factura); 
+
+ALTER TABLE TblLecturadeProductos
+ADD CONSTRAINT FOREIGN KEY (Lectura_Productos_CodigoBarra) REFERENCES TblCuentasFacturadas(CuentasFacturadas_NumeroFactura);
+);
+
+
+CREATE TABLE TblCuentasFacturadas(
+CuentasFacturadas_Date DATETIME NOT NULL,
+CuentasFacturadas_NumeroFactura VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblCuentasFacturadas
+ADD CONSTRAINT FOREIGN KEY (CuentasFacturadas_NumeroFactura) REFERENCES TblFacturasAlmacenadas(Facturas_Almacenadas_NumeroFactura);
+
+ALTER TABLE TblCuentasFacturadas 
+ADD CONSTRAINT FOREIGN KEY (CuentasFacturadas_NumeroFactura) REFERENCES TblImpresionFactura(Impresion_Facturas_NumeroFactura);
+
+CREATE TABLE TblFacturasAlmacenadas(
+Facturas_Almacenadas_NombreCliente TEXT NOT NULL, 
+Facturas_Almacenadas_Productos VARCHAR(300) NOT NULL,
+Facturas_Almacenadas_Total VARCHAR(20) NOT NULL,
+Facturas_Almacenadas_Cajero TEXT NOT NULL,
+Facturas_Almacenadas_Cambio VARCHAR(20) NOT NULL,
+Facturas_Almacenadas_Recibido VARCHAR(35) NOT NULL,
+Facturas_Almacenadas_NumeroFactura VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblFacturasAlmacenadas
+ADD CONSTRAINT FOREIGN KEY (Facturas_Almacenadas_NumeroFactura) REFERENCES TblDevoluciones(Devoluciones_NumeroFactura);
+
+
+CREATE TABLE TblDevoluciones(
+Devoluciones_Motivo TEXT NOT NULL, 
+Devoluciones_NumeroFactura VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+CREATE TABLE TblImpresionFactura(
+Impresion_Factura_ImprimirFactura VARCHAR(20) NOT NULL, 
+Impresion_Factura_CodigodeBarra VARCHAR(20) NOT NULL,
+Impresion_Facturas_NumeroFactura VARCHAR(200) PRIMARY KEY NOT NULL 
+);
+
+ALTER TABLE TblImpresionFactura
+ADD CONSTRAINT FOREIGN KEY (Impresion_Facturas_NumeroFactura) REFERENCES TblImpresionScreen(ImpresionScreen_Imprimir_Factura);
+
+ALTER TABLE TblImpresionFactura 
+ADD CONSTRAINT FOREIGN KEY (Impresion_Facturas_NumeroFactura) REFERENCES TblArticulosComprados(ArticulosComprados_CodigodeBarra);
+
+CREATE TABLE TblImpresionScreen(
+ImpresionScreen_Imprimir_Productos VARCHAR(400) NOT NULL, 
+ImpresionScreen_Imprimir_Factura VARCHAR(200) PRIMARY KEY  NOT NULL,
+ImpresionScreen_Imprimir_Producto VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE TblArticulosInventario(
+ArticulosInventario_CodigoBarra VARCHAR(200) PRIMARY KEY NOT NULL, 
+ArticulosInventario_ArticuloNombre TEXT NOT NULL,
+ArticulosInventario_Referencia VARCHAR(10) NOT NULL,
+ArticulosInventario_Precio VARCHAR(35) NOT NULL
+);
+
+ALTER TABLE TblArticulosInventario
+ADD CONSTRAINT FOREIGN KEY (ArticulosInventario_CodigoBarra) REFERENCES TblArticulosComprados(ArticulosComprados_CodigodeBarra);
+
+CREATE TABLE TblArticulosComprados(
+ArticulosComprados_CantidadStock VARCHAR(25) NOT NULL, 
+ArticulosComprados_CodigodeBarra VARCHAR(200) PRIMARY KEY NOT  NULL,
+ArticulosComprados_NumeroFactura VARCHAR(10) NOT NULL
+);
+
+ALTER TABLE TblArticulosComprados
+ADD CONSTRAINT FOREIGN KEY (ArticulosComprados_CodigodeBarra) REFERENCES TblImpresionFactura(Impresion_Facturas_NumeroFactura);
+
+CREATE TABLE TblProveedores(
+Proveedores_Nombre VARCHAR(50) NOT NULL, 
+Proveedores_Identificacion VARCHAR(11) NOT NULL,
+Proveedores_EstadoPedidos TEXT NOT NULL,
+Proveedores_Recibido VARCHAR(200) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE TblProveedores 
+ADD CONSTRAINT FOREIGN KEY (Proveedores_Recibido) REFERENCES TblAdministrador(Administrador_Supervision);
+
+CREATE TABLE TblOperario(
+Operario_Operacion VARCHAR(200) PRIMARY KEY NOT NULL, 
+Operario_Lote VARCHAR(9) NOT NULL
+);
+
+ALTER TABLE TblOperario 
+ADD CONSTRAINT FOREIGN KEY (Operario_Operacion) REFERENCES TblOperacionesdeAdministraccion(OperacionesdeAdministracion_Date);
+
+ALTER TABLE TblOperario
+ADD CONSTRAINT FOREIGN KEY (Operario_Operacion) REFERENCES TblArticulosSuministrados(ArticulosSuministrados_Lote);
+
+
+CREATE TABLE TblAdministrador(
+Administrador_Supervision VARCHAR(200) PRIMARY KEY NOT NULL,
+Administrador_Proveedores_Nombre VARCHAR(200)  NOT NULL
+);
+
+ALTER TABLE TblAdministrador
+ADD CONSTRAINT FOREIGN KEY (Administrador_Supervision) REFERENCES TblProveedores(Proveedores_Recibido);
+
+ALTER TABLE TblAdministrador 
+ADD CONSTRAINT FOREIGN KEY (Administrador_Supervision) REFERENCES TblOperacionesdeAdministraccion(OperacionesdeAdministracion_Date);
+
+CREATE TABLE TblArticulosSuministrados(
+ArticulosSuministrados_Lote VARCHAR(200) PRIMARY KEY NOT NULL, 
+ArticulosSuministrados_Ingresados VARCHAR(20) NOT NULL
+);
+
+ALTER TABLE TblArticulosSuministrados
+ADD CONSTRAINT FOREIGN KEY (ArticulosSuministrados_Lote) REFERENCES TblArticulosInventario(ArticulosInventario_Codigobarra);
+
+CREATE TABLE TblOperacionesdeAdministraccion(
+OperacionesdeAdministracion_Date VARCHAR(200) PRIMARY KEY NOT NULL,
+OperacionesdeAdministracion_Operario TEXT NOT NULL,
+OperacionesdeAdministracion_Administrador TEXT NOT NULL
+);
+
+ALTER TABLE TblOperacionesdeAdministraccion
+ADD CONSTRAINT FOREIGN KEY (OperacionesdeAdministracion_Date) REFERENCES TblAdministrador(Administrador_Supervision);
+
+ALTER TABLE TblOperacionesdeAdministraccion
+ADD CONSTRAINT FOREIGN KEY (OperacionesdeAdministracion_Date) REFERENCES TblOperario(Operario_Operacion);
+
+PUNTO 3
+
+PARTE 1 -Modulo de registro
+
+SELECT * FROM TblIdentificacion;
+SELECT * FROM TblPersonas;
+SELECT * FROM TblDatosValidos;
+SELECT * FROM TblProbarEmpleado;
+SELECT * FROM TblRegistrarUsuario;
+SELECT * FROM TblBraceIniciarSesion;
+SELECT * FROM TblSocket;
+SELECT * FROM TblEncriptadora;
+SELECT * FROM TblComprobaciondelaIdentidad;
+SELECT * FROM TblComprobacionIdentidad_IniciosSesion;
+SELECT * FROM TblIniciodeSesion;
+
+INSERT INTO TblIdentificacion(Identificacion_NumerodeCedula, Identificacion_NombreCompleto, Identificacion_FechaNacimiento, Identificacion_LugardeNacimiento, Identificacion_Genero) VALUES(1541654351, 'Esteban Andrade Romero', '1970-02-21', 'Medellin', 'Masculino');
+INSERT INTO TblIdentificacion(Identificacion_NumerodeCedula, Identificacion_NombreCompleto, Identificacion_FechaNacimiento, Identificacion_LugardeNacimiento, Identificacion_Genero) VALUES(3451687355, 'Maria Campo Valle', '1981-11-11', 'Barranquilla', 'Femenino');
+INSERT INTO TblIdentificacion(Identificacion_NumerodeCedula, Identificacion_NombreCompleto, Identificacion_FechaNacimiento, Identificacion_LugardeNacimiento, Identificacion_Genero) VALUES(8464535513, 'Mario Guzman Calle', '1990-08-18', 'Bucaramanga', 'Masculino');
+INSERT INTO TblIdentificacion(Identificacion_NumerodeCedula, Identificacion_NombreCompleto, Identificacion_FechaNacimiento, Identificacion_LugardeNacimiento, Identificacion_Genero) VALUES(11245115151, 'Gloria Moreno Bonfante', '1981-09-11', 'Cali', 'Femenino');
+
+INSERT INTO TblPersonas(id_Cargo, Personas_NumerodeCelular, Personas_NumeroFijo, Personas_CorreoElectronico, personas_DirecciondeResidencia, Personas_TipodeSangre) VALUES('1B1CD4DC4', 3152426884, 605155412, 'estebanandrader@marketexpress.com', 'Barrio la aurora Cra 35B No21-45', 'A+');
+INSERT INTO TblPersonas(id_Cargo, Personas_NumerodeCelular, Personas_NumeroFijo, Personas_CorreoElectronico, personas_DirecciondeResidencia, Personas_TipodeSangre) VALUES('1SV434SD5', 3016438767, 605215658, 'mariacampov@marketexpress.com', 'Barrio las palmas Calle 318 No11-40', 'B+');
+INSERT INTO TblPersonas(id_Cargo, Personas_NumerodeCelular, Personas_NumeroFijo, Personas_CorreoElectronico, personas_DirecciondeResidencia, Personas_TipodeSangre) VALUES('2DFVDVSS5', 3114354865, 605485237, 'marioguzmanc@marketexpress.com', 'Av las quintas No18-50', 'B+');
+INSERT INTO TblPersonas(id_Cargo, Personas_NumerodeCelular, Personas_NumeroFijo, Personas_CorreoElectronico, personas_DirecciondeResidencia, Personas_TipodeSangre) VALUES('97DF220Z1', 3164357536, 605236451, 'gloriamorenob@marketexpress.com', 'Barrio LA fogata Cra 30B No20-40', 'A+');
+
+INSERT INTO TblDatosValidos(DatosValidos_InfoCampos, DatosValidos_TestCampos, DatosValidos_NumerodeCedula) VALUES('3152426884, 605155412, estebanandrader@marketexpress.com, Barrio la aurora Cra 35B No21-45', 'OK', 1541654351);
+INSERT INTO TblDatosValidos(DatosValidos_InfoCampos, DatosValidos_TestCampos, DatosValidos_NumerodeCedula) VALUES('3016438767, 605215658, mariacampov@marketexpress.com, Barrio las palmas Calle 318 No11-40', 'OK', 3451687355);
+INSERT INTO TblDatosValidos(DatosValidos_InfoCampos, DatosValidos_TestCampos, DatosValidos_NumerodeCedula) VALUES('3114354865, 605485237, marioguzmanc@marketexpress.com, Av las quintas No18-50', 'OK', 8464535513);
+INSERT INTO TblDatosValidos(DatosValidos_InfoCampos, DatosValidos_TestCampos, DatosValidos_NumerodeCedula) VALUES('3164357536, 605236451, gloriamorenob@marketexpress.com, Barrio LA fogata Cra 30B No20-40', 'OK', 11245115151);
+
+
+INSERT INTO TblProbarEmpleado(ProbarEmpleado_ProbarToken, ProbarEmpleado_Date , ProbarEmpleado_EstadodePrueba, ProbarEmpleado_Info_Campos) VALUES('HJ2H8uhjk4hj25gh52gb', '2022-08-27:10:11:02', 'WAIT', '3152426884, 605155412, estebanandrader@marketexpress.com, Barrio la aurora Cra 35B No21-45');
+INSERT INTO TblProbarEmpleado(ProbarEmpleado_ProbarToken, ProbarEmpleado_Date , ProbarEmpleado_EstadodePrueba, ProbarEmpleado_Info_Campos) VALUES('HJbkUH56453SNklnknSD', '2022-08-27:09:02:47', 'PASS', '3016438767, 605215658, mariacampov@marketexpress.com, Barrio las palmas Calle 318 No11-40');
+INSERT INTO TblProbarEmpleado(ProbarEmpleado_ProbarToken, ProbarEmpleado_Date , ProbarEmpleado_EstadodePrueba, ProbarEmpleado_Info_Campos) VALUES('HJLJNjnkd1556DMDDIMD', '2022-08-27:08:18:25', 'PASS', '3114354865, 605485237, marioguzmanc@marketexpress.com, Av las quintas No18-50');
+INSERT INTO TblProbarEmpleado(ProbarEmpleado_ProbarToken, ProbarEmpleado_Date , ProbarEmpleado_EstadodePrueba, ProbarEmpleado_Info_Campos) VALUES('HJkjKJH56HJHSD654dnI', '2022-08-27:11:12:05', 'WAIT', '3164357536, 605236451, gloriamorenob@marketexpress.com, Barrio LA fogata Cra 30B No20-40');
+
+INSERT INTO TblRegistrarUsuario(RegistrarUsuario_ProbarToken, RegistrarUsuario_Date, RegistrarUsuario_Info_Register,  RegistrarUsuario_Log_Register) VALUES('OK','2022-08-27:10:11:40', '3152426884, 605155412, estebanandrader@marketexpress.com, Barrio la aurora Cra 35B No21-45', '/Log/2022/08/27/01');
+INSERT INTO TblRegistrarUsuario(RegistrarUsuario_ProbarToken, RegistrarUsuario_Date, RegistrarUsuario_Info_Register,  RegistrarUsuario_Log_Register) VALUES('OK','2022-08-27:09:02:50', '3016438767, 605215658, mariacampov@marketexpress.com, Barrio las palmas Calle 318 No11-40', '/Log/2022/08/27/02');
+INSERT INTO TblRegistrarUsuario(RegistrarUsuario_ProbarToken, RegistrarUsuario_Date, RegistrarUsuario_Info_Register,  RegistrarUsuario_Log_Register) VALUES('OK','2022-08-27:08:18:30', '3114354865, 605485237, marioguzmanc@marketexpress.com, Av las quintas No18-50', '/Log/2022/08/27/03');
+INSERT INTO TblRegistrarUsuario(RegistrarUsuario_ProbarToken, RegistrarUsuario_Date, RegistrarUsuario_Info_Register,  RegistrarUsuario_Log_Register) VALUES('OK','2022-08-27:11:12:15', '3164357536, 605236451, gloriamorenob@marketexpress.com, Barrio LA fogata Cra 30B No20-40', '/Log/2022/08/27/04');
+
+INSERT INTO TblBraceIniciarSesion(Brace_IniciarSesion_Date, Brace_IniciarSesion_Usuario, Brace_IniciarSesion_Contraseña, Brace_IniciarSesion_Clave_Automatica_Generator) VALUES('2022-08-27:10:11:40', 'Esteban77', '46548678', 'KGbhvbhsbhjlhnd444ccn');
+INSERT INTO TblBraceIniciarSesion(Brace_IniciarSesion_Date, Brace_IniciarSesion_Usuario, Brace_IniciarSesion_Contraseña, Brace_IniciarSesion_Clave_Automatica_Generator) VALUES('2022-08-27:09:02:50', 'MariaCamp', '545544541', 'KGJKgkgkgjsc445c46chi');
+INSERT INTO TblBraceIniciarSesion(Brace_IniciarSesion_Date, Brace_IniciarSesion_Usuario, Brace_IniciarSesion_Contraseña, Brace_IniciarSesion_Clave_Automatica_Generator) VALUES('2022-08-27:08:18:30', 'Mario87', '5457453', 'MLKJILHf85vkjnid44lmkv5');
+INSERT INTO TblBraceIniciarSesion(Brace_IniciarSesion_Date, Brace_IniciarSesion_Usuario, Brace_IniciarSesion_Contraseña, Brace_IniciarSesion_Clave_Automatica_Generator) VALUES('2022-08-27:11:12:15', 'GloriaMore12', '4846451', 'JIJdkkjmdl656DCVJWS');
+
+INSERT INTO TblSocket(Socket_Date, Socket_IP, Socket_MAC, Socket_Clave_Automatica_Reconfigurada) VALUES('2022-08-27:10:11:50', '154.346.656.1', 'SD47:HF64:GHKCS:J65S', 'JHJhnsj545fmmdc445d5v');
+INSERT INTO TblSocket(Socket_Date, Socket_IP, Socket_MAC, Socket_Clave_Automatica_Reconfigurada) VALUES('2022-08-27:09:02:55', '159.654.576.124', 'S547:FGC4:KLCS:5JHS', 'jLJKLJDD265DV31SCKJKLLC');
+INSERT INTO TblSocket(Socket_Date, Socket_IP, Socket_MAC, Socket_Clave_Automatica_Reconfigurada) VALUES('2022-08-27:08:18:40', '188.397.746.144', 'HD97:HSC4:J6CS:HJ5S', 'JHKLJCFKAkjkljd456v4sjkj');
+INSERT INTO TblSocket(Socket_Date, Socket_IP, Socket_MAC, Socket_Clave_Automatica_Reconfigurada) VALUES('2022-08-27:11:12:19', '179.378.798.14', 'S657:C6C4:H65S:94FS', 'JHBCLJKAChinlc65s56456s56');
+
+INSERT INTO TblEncriptadora(Encriptadora_Clave_Automatica_Final, Encriptadora_Digest_Info_Usuario, Encriptadora_Digest_Id_Usuario, Encriptatora_Digest_Contraseña_Usuario) VALUES('JKGHJKsd4545fs46fnkc', '3152426884, 605155412, estebanandrader@marketexpress.com, Barrio la aurora Cra 35B No21-45', 'Esteban77', '46548678');
+INSERT INTO TblEncriptadora(Encriptadora_Clave_Automatica_Final, Encriptadora_Digest_Info_Usuario, Encriptadora_Digest_Id_Usuario, Encriptatora_Digest_Contraseña_Usuario) VALUES('LNFIAS5656568DNLCJSDL', '3016438767, 605215658, mariacampov@marketexpress.com, Barrio las palmas Calle 318 No11-40', 'MariaCamp', '545544541');
+INSERT INTO TblEncriptadora(Encriptadora_Clave_Automatica_Final, Encriptadora_Digest_Info_Usuario, Encriptadora_Digest_Id_Usuario, Encriptatora_Digest_Contraseña_Usuario) VALUES('KMCKLA84564673DCHDCJS', '3114354865, 605485237, marioguzmanc@marketexpress.com, Av las quintas No18-50', 'Mario87', '5457453');
+INSERT INTO TblEncriptadora(Encriptadora_Clave_Automatica_Final, Encriptadora_Digest_Info_Usuario, Encriptadora_Digest_Id_Usuario, Encriptatora_Digest_Contraseña_Usuario) VALUES('JHNDJIC56454DCJNKSJHA', '3164357536, 605236451, gloriamorenob@marketexpress.com, Barrio LA fogata Cra 30B No20-40', 'GloriaMore12', '4846451');
+
+INSERT INTO TblComprobaciondelaIdentidad(ComprobacionIdentidad_Desencriptacion_Info_usuario, ComprobacionIdentidad_Desencriptacion_Id_usuario, ComprobacionIdentidad_Desencriptacion_Contraseña_Usuario) VALUES('HVbjkjkkslf4546dv64', 'JCFL9S35636DCKLÑDÑS', 'KKCKSCKSPDLV57D88SDM');
+INSERT INTO TblComprobaciondelaIdentidad(ComprobacionIdentidad_Desencriptacion_Info_usuario, ComprobacionIdentidad_Desencriptacion_Id_usuario, ComprobacionIdentidad_Desencriptacion_Contraseña_Usuario) VALUES('HVbFKJFIOSLFLL547V4', 'JOJDCLD6856855SMSOS', 'NNDLVS828D5CKDLSKPFM');
+INSERT INTO TblComprobaciondelaIdentidad(ComprobacionIdentidad_Desencriptacion_Info_usuario, ComprobacionIdentidad_Desencriptacion_Id_usuario, ComprobacionIdentidad_Desencriptacion_Contraseña_Usuario) VALUES('jhKJLKLDKLKS55744SV', 'JHMNKMDKLASLS8575DM', 'JCKSD8828C78CSKDKLDL');
+INSERT INTO TblComprobaciondelaIdentidad(ComprobacionIdentidad_Desencriptacion_Info_usuario, ComprobacionIdentidad_Desencriptacion_Id_usuario, ComprobacionIdentidad_Desencriptacion_Contraseña_Usuario) VALUES('KLNCKLFS545FSMCVLSK', 'JkKKFMKklm7589d88ai', 'NCKDO8D93S8DCKPDKSOLD');
+
+INSERT INTO TblComprobacionIdentidad_IniciosSesion(ComprobacionIdentidad_InicioSesion_Id_Usuario, ComprobacionIdentidad_InicioSesion_URI, ComprobacionIdentidad_InicioSesion_Date) VALUES('Esteban77', '/dashboard124/cajero/esteban77', '2022-08-27:10:12:00');
+INSERT INTO TblComprobacionIdentidad_IniciosSesion(ComprobacionIdentidad_InicioSesion_Id_Usuario, ComprobacionIdentidad_InicioSesion_URI, ComprobacionIdentidad_InicioSesion_Date) VALUES('MariaCamp', '/dashboard124/cajero/mariacamp', '2022-08-27:09:03:00');
+INSERT INTO TblComprobacionIdentidad_IniciosSesion(ComprobacionIdentidad_InicioSesion_Id_Usuario, ComprobacionIdentidad_InicioSesion_URI, ComprobacionIdentidad_InicioSesion_Date) VALUES('Mario87', '/dashboard124/operario/mario87', '2022-08-27:08:18:50');
+INSERT INTO TblComprobacionIdentidad_IniciosSesion(ComprobacionIdentidad_InicioSesion_Id_Usuario, ComprobacionIdentidad_InicioSesion_URI, ComprobacionIdentidad_InicioSesion_Date) VALUES('GloriaM12', '/dashboard124/administrador/gloriamore12', '2022-08-27:11:12:29');
+
+INSERT INTO TblIniciodeSesion(InicioSession_TokenSesion, InicioSession_Date, InicioSession_Register_Socket, InicioSession_Counter, InicioSession_Generar_URI) VALUES('HJ2H8uhjk4hj25gh52gb', '2022-08-27:10:12:05', '154.346.656.1:81', '2022-08-28:10:12:05', 'READY');
+INSERT INTO TblIniciodeSesion(InicioSession_TokenSesion, InicioSession_Date, InicioSession_Register_Socket, InicioSession_Counter, InicioSession_Generar_URI) VALUES('HJbkUH56453SNklnknSD', '2022-08-27:09:03:05', '159.654.576.124:81', '2022-08-28:09:03:05', 'READY1');
+INSERT INTO TblIniciodeSesion(InicioSession_TokenSesion, InicioSession_Date, InicioSession_Register_Socket, InicioSession_Counter, InicioSession_Generar_URI) VALUES('HJLJNjnkd1556DMDDIMD', '2022-08-27:08:18:55', '188.397.746.144:81', '2022-08-28:08:18:55', 'READY2');
+INSERT INTO TblIniciodeSesion(InicioSession_TokenSesion, InicioSession_Date, InicioSession_Register_Socket, InicioSession_Counter, InicioSession_Generar_URI) VALUES('HJkjKJH56HJHSD654dnI', '2022-08-27:11:12:34', '179.378.798.14:81', '2022-08-28:11:12:34', 'READY3');
+
+PARTE 2 - Modulo de Operaciones
+
+SELECT * FROM TblOperacionesdeVenta;
+SELECT * FROM TblCajero_TblClientes;
+SELECT * FROM TblClientes;
+SELECT * FROM TblCajero;
+SELECT * FROM TblCuentasIniciadas;
+SELECT * FROM TblLecturadeProductos;
+SELECT * FROM TblImpresionScreen;
+SELECT * FROM TblCuentasFacturadas;
+SELECT * FROM TblFacturasAlmacenadas;
+SELECT * FROM TblDevoluciones;
+SELECT * FROM TblImpresionFactura;
+SELECT * FROM TblArticulosComprados;
+SELECT * FROM TblArticulosInventario;
+SELECT * FROM TblArticulosSuministrados;
+SELECT * FROM TblProveedores;
+SELECT * FROM TblOperario;
+SELECT * FROM TblAdministrador;
+SELECT * FROM TblOperacionesdeAdministraccion;
+
+INSERT INTO TblOperacionesdeVenta(OperacionesdeVenta_Date_Inicio, OperacionesdeVenta_Date_Final) VALUES('2022-08-27:09:18:50', '2022-08-27:22:50:50');
+INSERT INTO TblOperacionesdeVenta(OperacionesdeVenta_Date_Inicio, OperacionesdeVenta_Date_Final) VALUES('2022-08-27:08:02:55', '2022-08-27:22:30:55');
+INSERT INTO TblOperacionesdeVenta(OperacionesdeVenta_Date_Inicio, OperacionesdeVenta_Date_Final) VALUES('2022-08-27:09:18:40', '2022-08-27:22:18:40');
+INSERT INTO TblOperacionesdeVenta(OperacionesdeVenta_Date_Inicio, OperacionesdeVenta_Date_Final) VALUES('2022-08-27:09:12:19', '2022-08-27:22:50:19');
+
+INSERT INTO TblCajero_TblClientes(Cajero_Clientes_Date_Inicio, Cajero_Clientes_Date_Final) VALUES('2022-08-27:11:11:30', '2022-08-27:11:12:02');
+INSERT INTO TblCajero_TblClientes(Cajero_Clientes_Date_Inicio, Cajero_Clientes_Date_Final) VALUES('2022-08-27:10:20:45', '2022-08-27:10:30:05');
+INSERT INTO TblCajero_TblClientes(Cajero_Clientes_Date_Inicio, Cajero_Clientes_Date_Final) VALUES('2022-08-27:12:18:10', '2022-08-27:12:20:40');
+INSERT INTO TblCajero_TblClientes(Cajero_Clientes_Date_Inicio, Cajero_Clientes_Date_Final) VALUES('2022-08-27:13:12:09', '2022-08-27:13:32:09');
+
+INSERT INTO TblClientes(Clientes_Nombre, Clientes_NumeroCedula) VALUES('Generic' , '1546366554');
+INSERT INTO TblClientes(Clientes_Nombre, Clientes_NumeroCedula) VALUES('Generic' , '14856854354');
+INSERT INTO TblClientes(Clientes_Nombre, Clientes_NumeroCedula) VALUES('Generic' , '24686547335');
+INSERT INTO TblClientes(Clientes_Nombre, Clientes_NumeroCedula) VALUES('Generic' , '7868573543');
+
+INSERT INTO TblCajero(Cajero_Caja, Cajero_Nombre) VALUES('02', 'Esteban77');
+INSERT INTO TblCajero(Cajero_Caja, Cajero_Nombre) VALUES('01', 'MariaCamp');
+INSERT INTO TblCajero(Cajero_Caja, Cajero_Nombre) VALUES('02', 'Sebastian21');
+INSERT INTO TblCajero(Cajero_Caja, Cajero_Nombre) VALUES('03', 'Pablo15');
+
+INSERT INTO TblCuentasIniciadas(Cuentas_Iniciadas_ID, Cuentas_Iniciadas_TokenCuenta) VALUES('15451151', 'JAHS456CSJhklnMLXD453');
+INSERT INTO TblCuentasIniciadas(Cuentas_Iniciadas_ID, Cuentas_Iniciadas_TokenCuenta) VALUES('14447843', 'JACJHNCDIC46S7D54DV54');
+INSERT INTO TblCuentasIniciadas(Cuentas_Iniciadas_ID, Cuentas_Iniciadas_TokenCuenta) VALUES('57516875', 'JDJD5V6FF6S3DF6CF563C');
+INSERT INTO TblCuentasIniciadas(Cuentas_Iniciadas_ID, Cuentas_Iniciadas_TokenCuenta) VALUES('18865484', 'JDCFA543348C76ASD6X2A');
+
+INSERT INTO TblLecturadeProductos(Lectura_Productos_CodigoBarra, Lectura_Productos_NombreProducto, Lectura_Productos_HoraLectura) VALUES('7565557673447', 'Jabon Fab Ropa Color x120g', '2022-08-27:11:11:35');
+INSERT INTO TblLecturadeProductos(Lectura_Productos_CodigoBarra, Lectura_Productos_NombreProducto, Lectura_Productos_HoraLectura) VALUES('7565657453457', 'Arroz El granero x500g', '2022-08-27:10:20:50');
+INSERT INTO TblLecturadeProductos(Lectura_Productos_CodigoBarra, Lectura_Productos_NombreProducto, Lectura_Productos_HoraLectura) VALUES('7546354656347', 'Yogurt Muuuu x100g', '2022-08-27:12:18:11');
+INSERT INTO TblLecturadeProductos(Lectura_Productos_CodigoBarra, Lectura_Productos_NombreProducto, Lectura_Productos_HoraLectura) VALUES('7431356354517', 'Papas Fritas Margarita x200g', '2022-08-27:13:12:14');
+
+INSERT INTO TblImpresionScreen(ImpresionScreen_Imprimir_Productos, ImpresionScreen_Imprimir_Factura, ImpresionScreen_Imprimir_Producto) VALUES('Jabon Fab Ropa Color x120g, Blanqueador blanquea x300ml, Pasabocas Doritos x300g', '/facturas/2022/08/27/11', 'NONE');
+INSERT INTO TblImpresionScreen(ImpresionScreen_Imprimir_Productos, ImpresionScreen_Imprimir_Factura, ImpresionScreen_Imprimir_Producto) VALUES('Arroz El granero x500g, Detergente blanquea x500g', 'NO FACTURADA', 'Pan tajado blanco Bimbo x 250g');
+INSERT INTO TblImpresionScreen(ImpresionScreen_Imprimir_Productos, ImpresionScreen_Imprimir_Factura, ImpresionScreen_Imprimir_Producto) VALUES('Jabon desodorante herbal packx3Und, Atun Vancamp Aceitex 200g, Yogurt Muuu x100g', '/facturas/2022/08/27/12', 'NONE');
+INSERT INTO TblImpresionScreen(ImpresionScreen_Imprimir_Productos, ImpresionScreen_Imprimir_Factura, ImpresionScreen_Imprimir_Producto) VALUES('Papas Fritas Margarita x200g, Galletas Festival packx12und', 'NO FACTURADA1', 'Leche algarra bolsa x 900ml');
+
+INSERT INTO TblCuentasFacturadas(CuentasFacturadas_Date , CuentasFacturadas_NumeroFactura) VALUES('2022-08-27:11:12:02', '15451151');
+INSERT INTO TblCuentasFacturadas(CuentasFacturadas_Date , CuentasFacturadas_NumeroFactura) VALUES('2022-08-27:10:30:05', '14447843');
+INSERT INTO TblCuentasFacturadas(CuentasFacturadas_Date , CuentasFacturadas_NumeroFactura) VALUES('2022-08-27:12:20:40', '57516875');
+INSERT INTO TblCuentasFacturadas(CuentasFacturadas_Date , CuentasFacturadas_NumeroFactura) VALUES('2022-08-27:13:32:09', '18865484');
+
+INSERT INTO TblFacturasAlmacenadas(Facturas_Almacenadas_NombreCliente, Facturas_Almacenadas_Productos, Facturas_Almacenadas_Total, Facturas_Almacenadas_Cajero, Facturas_Almacenadas_Cambio, Facturas_Almacenadas_Recibido, Facturas_Almacenadas_NumeroFactura) VALUES('Generic', 'Jabon Fab Ropa Color x120g, Blanqueador blanquea x300ml, Pasabocas Doritos x300g', '15200', 'Esteban77', '4800', '20000', '15451151');
+INSERT INTO TblFacturasAlmacenadas(Facturas_Almacenadas_NombreCliente, Facturas_Almacenadas_Productos, Facturas_Almacenadas_Total, Facturas_Almacenadas_Cajero, Facturas_Almacenadas_Cambio, Facturas_Almacenadas_Recibido, Facturas_Almacenadas_NumeroFactura) VALUES('Generic', 'Arroz El granero x500g, Detergente blanquea x500g, Pan tajado blanco Bimbo x 250g', '16200', 'MariaCamp', '4800', '20000', '14447843');
+INSERT INTO TblFacturasAlmacenadas(Facturas_Almacenadas_NombreCliente, Facturas_Almacenadas_Productos, Facturas_Almacenadas_Total, Facturas_Almacenadas_Cajero, Facturas_Almacenadas_Cambio, Facturas_Almacenadas_Recibido, Facturas_Almacenadas_NumeroFactura) VALUES('Generic', 'Jabon desodorante herbal packx3Und, Atun Vancamp Aceitex 200g, Yogurt Muuu x100g', '20000', 'Sebastian21', '0', '20000', '57516875');
+INSERT INTO TblFacturasAlmacenadas(Facturas_Almacenadas_NombreCliente, Facturas_Almacenadas_Productos, Facturas_Almacenadas_Total, Facturas_Almacenadas_Cajero, Facturas_Almacenadas_Cambio, Facturas_Almacenadas_Recibido, Facturas_Almacenadas_NumeroFactura) VALUES('Generic', 'Papas Fritas Margarita x200g, Galletas Festival packx12und, Leche algarra bolsa x 900ml', '16000', 'Pablo15', '4800', '20000', '18865484');
+
+INSERT INTO TblDevoluciones(Devoluciones_Motivo, Devoluciones_NumeroFactura) VALUES('Producto Supera Fecha de Vencimiento, Yogurt Muuu', '57516875');
+INSERT INTO TblDevoluciones(Devoluciones_Motivo, Devoluciones_NumeroFactura) VALUES('Producto Supera Fecha de Vencimiento, Leche Algarra Bolsa x900g', '18865484');
+
+INSERT INTO TblImpresionFactura(Impresion_Factura_ImprimirFactura, Impresion_Factura_CodigodeBarra, Impresion_Facturas_NumeroFactura) VALUES('VALIDO', '7565557673447', '15451151');
+INSERT INTO TblImpresionFactura(Impresion_Factura_ImprimirFactura, Impresion_Factura_CodigodeBarra, Impresion_Facturas_NumeroFactura) VALUES('VALIDO', '7565657453457', '14447843');
+INSERT INTO TblImpresionFactura(Impresion_Factura_ImprimirFactura, Impresion_Factura_CodigodeBarra, Impresion_Facturas_NumeroFactura) VALUES('VALIDO', '7546354656347', '57516875');
+INSERT INTO TblImpresionFactura(Impresion_Factura_ImprimirFactura, Impresion_Factura_CodigodeBarra, Impresion_Facturas_NumeroFactura) VALUES('VALIDO', '7431356354517', '18865484');
+
+
+INSERT INTO TblArticulosComprados(ArticulosComprados_CantidadStock, ArticulosComprados_CodigodeBarra, ArticulosComprados_NumeroFactura) VALUES('100', '7565557673447', '15451151');
+INSERT INTO TblArticulosComprados(ArticulosComprados_CantidadStock, ArticulosComprados_CodigodeBarra, ArticulosComprados_NumeroFactura) VALUES('230', '7565657453457', '14447843');
+INSERT INTO TblArticulosComprados(ArticulosComprados_CantidadStock, ArticulosComprados_CodigodeBarra, ArticulosComprados_NumeroFactura) VALUES('202', '7546354656347', '57516875');
+INSERT INTO TblArticulosComprados(ArticulosComprados_CantidadStock, ArticulosComprados_CodigodeBarra, ArticulosComprados_NumeroFactura) VALUES('10', '7431356354517', '18865484');
+
+
+INSERT INTO TblArticulosInventario(ArticulosInventario_CodigoBarra, ArticulosInventario_ArticuloNombre, ArticulosInventario_Referencia, ArticulosInventario_Precio) VALUES('7565557673447', 'Jabon Fab Ropa Color x120g', '24868', '2500');
+INSERT INTO TblArticulosInventario(ArticulosInventario_CodigoBarra, ArticulosInventario_ArticuloNombre, ArticulosInventario_Referencia, ArticulosInventario_Precio) VALUES('7565657453457', 'Arroz El granero x500g', '24645', '3000');
+INSERT INTO TblArticulosInventario(ArticulosInventario_CodigoBarra, ArticulosInventario_ArticuloNombre, ArticulosInventario_Referencia, ArticulosInventario_Precio) VALUES('7546354656347', 'Yogurt Muuuu x100g', '24458', '1500');
+INSERT INTO TblArticulosInventario(ArticulosInventario_CodigoBarra, ArticulosInventario_ArticuloNombre, ArticulosInventario_Referencia, ArticulosInventario_Precio) VALUES('7431356354517', 'Papas Fritas Margarita x200g', '24878', '2500');
+
+INSERT INTO TblArticulosSuministrados(ArticulosSuministrados_Lote, ArticulosSuministrados_Ingresados) VALUES('5358', '89');
+INSERT INTO TblArticulosSuministrados(ArticulosSuministrados_Lote, ArticulosSuministrados_Ingresados) VALUES('5488', '89');
+INSERT INTO TblArticulosSuministrados(ArticulosSuministrados_Lote, ArticulosSuministrados_Ingresados) VALUES('5968', '46');
+INSERT INTO TblArticulosSuministrados(ArticulosSuministrados_Lote, ArticulosSuministrados_Ingresados) VALUES('5789', '100');
+
+INSERT INTO TblProveedores(Proveedores_Nombre, Proveedores_Identificacion, Proveedores_EstadoPedidos, Proveedores_Recibido) VALUES('Compañia Ramo', '4516', 'En espera', 'No');
+INSERT INTO TblProveedores(Proveedores_Nombre, Proveedores_Identificacion, Proveedores_EstadoPedidos, Proveedores_Recibido) VALUES('Productos Palmolive', '4896', 'Llego', 'Si');
+INSERT INTO TblProveedores(Proveedores_Nombre, Proveedores_Identificacion, Proveedores_EstadoPedidos, Proveedores_Recibido) VALUES('Mars Company', '4897', 'Llego2', 'Si2');
+INSERT INTO TblProveedores(Proveedores_Nombre, Proveedores_Identificacion, Proveedores_EstadoPedidos, Proveedores_Recibido) VALUES('Fritos Lay', '3578', 'En espera', 'No3');
+
+INSERT INTO TblOperario(Operario_Operacion, Operario_Lote) VALUES('Recibido de suministro', '5488');
+INSERT INTO TblOperario(Operario_Operacion, Operario_Lote) VALUES('Ingreso de Articulos', '5358');
+INSERT INTO TblOperario(Operario_Operacion, Operario_Lote) VALUES('Inventario de productos', '4568');
+INSERT INTO TblOperario(Operario_Operacion, Operario_Lote) VALUES('Ingreso3 de Articulos', '5468');
+
+INSERT INTO TblAdministrador(Administrador_Supervision, Administrador_Proveedores_Nombre) VALUES('Recogida caja 1', 'Brink Company');
+INSERT INTO TblAdministrador(Administrador_Supervision, Administrador_Proveedores_Nombre) VALUES('Recibido de suministro', 'Cadena de suministro propia');
+INSERT INTO TblAdministrador(Administrador_Supervision, Administrador_Proveedores_Nombre) VALUES('Aseo tienda', 'MariaCamp');
+INSERT INTO TblAdministrador(Administrador_Supervision, Administrador_Proveedores_Nombre) VALUES('Recogida caja 2', 'Brink Company');
+
+INSERT INTO TblOperacionesdeAdministraccion(OperacionesdeAdministracion_Date, OperacionesdeAdministracion_Operario, OperacionesdeAdministracion_Administrador) VALUES('2022-08-27:09:18:50', 'MariaCamp1', 'GloriaMore12');
+INSERT INTO TblOperacionesdeAdministraccion(OperacionesdeAdministracion_Date, OperacionesdeAdministracion_Operario, OperacionesdeAdministracion_Administrador) VALUES('2022-08-27:09:28:50', 'MariaCamp2', 'Seba12');
+INSERT INTO TblOperacionesdeAdministraccion(OperacionesdeAdministracion_Date, OperacionesdeAdministracion_Operario, OperacionesdeAdministracion_Administrador) VALUES('2022-08-27:09:48:50', 'MariaCamp3', 'Yina45');
+INSERT INTO TblOperacionesdeAdministraccion(OperacionesdeAdministracion_Date, OperacionesdeAdministracion_Operario, OperacionesdeAdministracion_Administrador) VALUES('2022-08-27:09:98:50', 'MariaCamp4', 'Ruth14');
+
+
+PUNTO 4
+
+SELECT * FROM TblLecturadeProductos 
+ORDER BY Lectura_Productos_CodigoBarra;
+
+SELECT * FROM TblSocket ORDER BY Socket_Date;
+
+SELECT Identificacion_NombreCompleto FROM TblIdentificacion WHERE Identificacion_LugardeNacimiento = 'Barranquilla';
+
+
+
+
+
+
+
+
+
+
